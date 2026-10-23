@@ -1,1250 +1,507 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0a171a">
-  <title>PLAN A TRIP — Find your next adventure</title>
-
-  <style>
-    :root {
-      color-scheme: dark;
-      --ink: #f8f5e9;
-      --muted: #b9c0b8;
-      --gold: #e6c981;
-      --coral: #ff9a77;
-      --teal: #8fe1cf;
-      --panel: rgba(15, 27, 31, .9);
-    }
-
-    * { box-sizing: border-box; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      overflow-x: hidden;
-      color: var(--ink);
-      background: #0a171a;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-    }
-
-    .backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: -2;
-      background:
-        radial-gradient(ellipse at 75% 30%, rgba(28, 94, 83, .42), transparent 40%),
-        radial-gradient(ellipse at 20% 78%, rgba(176, 89, 58, .19), transparent 35%),
-        linear-gradient(135deg, #081417, #102124 54%, #0a1518);
-    }
-
-    .backdrop::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: .65;
-      background:
-        linear-gradient(90deg, rgba(8, 20, 23, .9), rgba(8, 20, 23, .35)),
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 700'%3E%3Cg fill='none' stroke='%23d0bd87' stroke-opacity='.22'%3E%3Cpath d='M-40 530C160 350 176 666 375 476S620 286 940 420M-20 580C168 420 214 700 410 522S660 344 930 468M80 0C220 140 20 250 180 390S330 530 290 730M670-30C520 90 740 180 590 310S490 530 640 730'/%3E%3Ccircle cx='680' cy='180' r='145'/%3E%3Ccircle cx='680' cy='180' r='158'/%3E%3C/g%3E%3C/svg%3E") center / cover no-repeat;
-    }
-
-    .backdrop::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: .08;
-      background-image: radial-gradient(#fff .7px, transparent .7px);
-      background-size: 44px 44px;
-      mask-image: linear-gradient(90deg, transparent, black);
-    }
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 5;
-      height: 74px;
-      padding: 0 max(24px, calc((100vw - 1180px) / 2));
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #d1c69d22;
-      background: rgba(8, 20, 23, .78);
-      backdrop-filter: blur(18px);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 11px;
-      color: var(--ink);
-      font-size: 13px;
-      font-weight: 850;
-      letter-spacing: .13em;
-      text-decoration: none;
-    }
-
-    .brand-mark {
-      display: grid;
-      width: 36px;
-      height: 36px;
-      place-items: center;
-      border-radius: 13px;
-      color: #10201e;
-      background: linear-gradient(135deg, var(--gold), var(--coral));
-      box-shadow: 0 0 30px #e9b66c55;
-    }
-
-    nav { display: flex; align-items: center; gap: 26px; }
-    nav a {
-      color: #d6ddcf;
-      font-size: 12px;
-      text-decoration: none;
-      transition: color .2s, background .2s;
-    }
-    nav a:hover { color: white; }
-    .nav-cta {
-      padding: 10px 16px;
-      border: 1px solid #d5c08c55;
-      border-radius: 999px;
-      background: #d5c08c0c;
-    }
-    .nav-cta:hover { background: #d5c08c20; }
-
-    main {
-      width: min(1180px, calc(100% - 48px));
-      min-height: calc(100vh - 74px);
-      margin: auto;
-      padding: 68px 0;
-      display: grid;
-      grid-template-columns: 1fr .9fr;
-      align-items: center;
-      gap: clamp(36px, 7vw, 88px);
-    }
-
-    .eyebrow, .section-kicker {
-      color: var(--gold);
-      font-size: 10px;
-      font-weight: 800;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-    }
-
-    .eyebrow::before {
-      content: "";
-      display: inline-block;
-      width: 30px;
-      height: 1px;
-      margin: 0 10px 3px 0;
-      background: var(--coral);
-    }
-
-    h1 {
-      max-width: 680px;
-      margin: 22px 0 20px;
-      font-size: clamp(54px, 7vw, 92px);
-      line-height: .94;
-      letter-spacing: -.065em;
-    }
-
-    h1 span {
-      color: transparent;
-      background: linear-gradient(100deg, #edcf88, #f59a70 65%, #a9d0b1);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-
-    .intro {
-      max-width: 510px;
-      margin: 0 0 26px;
-      color: #c7d0c9;
-      font-size: 15px;
-      line-height: 1.75;
-    }
-
-    .highlights {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 13px 18px;
-    }
-
-    .highlight {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      color: #e5e4d8;
-      font-size: 11px;
-    }
-
-    .icon {
-      display: grid;
-      width: 36px;
-      height: 36px;
-      place-items: center;
-      border: 1px solid #d5c08c30;
-      border-radius: 12px;
-      color: var(--gold);
-      background: #d5c08c0c;
-      font-size: 17px;
-    }
-
-    .route-vignette {
-      max-width: 510px;
-      margin-top: 30px;
-      padding: 14px 17px 12px;
-      overflow: hidden;
-      border: 1px solid #e2ca8a33;
-      border-radius: 15px;
-      background: linear-gradient(115deg, #e1c6810e, #5eaa8b0b);
-      box-shadow: inset 0 1px #ffffff0b;
-    }
-
-    .route-caption, .route-labels {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      color: #b8c5ba;
-      font-size: 8px;
-      letter-spacing: .15em;
-    }
-
-    .route-coordinates { color: #dbcc9e; letter-spacing: .06em; }
-    .route-map { display: block; width: 100%; height: 64px; }
-    .route-line {
-      fill: none;
-      stroke: #a5c6a0;
-      stroke-width: 1.5;
-      stroke-dasharray: 3 7;
-      stroke-linecap: round;
-      animation: route-draw 2.8s ease-in-out infinite alternate;
-    }
-    .route-stop { fill: var(--coral); stroke: #ffd99a; stroke-width: 2; }
-    .route-stop-end { fill: #a7d6b2; }
-    .route-plane { fill: #f6dc9e; }
-    .route-labels strong { color: #e9d49a; font-size: 9px; }
-    .route-labels i {
-      color: #f3a085;
-      font: italic 12px Georgia, serif;
-      letter-spacing: 0;
-      text-transform: none;
-    }
-
-    @keyframes route-draw {
-      from { stroke-dashoffset: 34; }
-      to { stroke-dashoffset: 0; }
-    }
-
-    .quote {
-      margin-top: 28px;
-      padding-left: 15px;
-      border-left: 2px solid var(--coral);
-      color: #b7c3bb;
-      font-size: 12px;
-      font-style: italic;
-      line-height: 1.6;
-    }
-    .quote strong {
-      display: block;
-      margin-top: 5px;
-      color: #e8d9ae;
-      font-size: 9px;
-      font-style: normal;
-      letter-spacing: .1em;
-    }
-
-    .card {
-      width: 100%;
-      max-width: 500px;
-      justify-self: end;
-      padding: 30px;
-      border: 1px solid #d8c38b33;
-      border-radius: 25px;
-      background: linear-gradient(145deg, rgba(20, 38, 40, .96), rgba(12, 24, 27, .96));
-      box-shadow: 0 28px 90px #0008, 0 0 70px #5da18b18, inset 0 1px #fff2;
-      backdrop-filter: blur(20px);
-    }
-
-    .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .card h2 { margin: 0 0 7px; font-size: 23px; letter-spacing: -.04em; }
-    .card-head p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
-    .step {
-      padding: 8px 11px;
-      border: 1px solid #e5c98133;
-      border-radius: 99px;
-      color: #edd79f;
-      font-size: 9px;
-      letter-spacing: .08em;
-      white-space: nowrap;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4px;
-      margin-bottom: 20px;
-      padding: 4px;
-      border-radius: 12px;
-      background: #071314;
-    }
-
-    .tabs button {
-      padding: 10px;
-      border: 0;
-      border-radius: 9px;
-      color: #aab4aa;
-      background: transparent;
-      font: inherit;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .tabs button.active {
-      color: white;
-      background: linear-gradient(120deg, #3c75634d, #c87d552b);
-    }
-
-    .fields, .planner-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 13px;
-    }
-
-    .field { display: flex; flex-direction: column; gap: 7px; }
-    .field.full { grid-column: 1 / -1; }
-    label { color: #d6d9cb; font-size: 10px; font-weight: 650; }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 13px 14px;
-      border: 1px solid #d5e0d31d;
-      border-radius: 11px;
-      outline: none;
-      color: white;
-      background: rgba(5, 15, 17, .75);
-      font: inherit;
-      font-size: 12px;
-      transition: border-color .2s, box-shadow .2s;
-    }
-
-    input::placeholder, textarea::placeholder { color: #819088; }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 4px #e5c98122;
-    }
-    textarea { min-height: 66px; resize: vertical; }
-
-    .captcha-row { display: flex; gap: 8px; }
-    .captcha-code {
-      display: grid;
-      min-width: 92px;
-      place-items: center;
-      border: 1px dashed #e5c98166;
-      border-radius: 10px;
-      color: #f1dcaa;
-      background: repeating-linear-gradient(135deg, #e1c68112 0 7px, #ff9a770a 7px 14px);
-      font: italic bold 17px Georgia, serif;
-      letter-spacing: .18em;
-      text-decoration: line-through;
-      user-select: none;
-    }
-    .captcha-row input { min-width: 0; }
-    .refresh {
-      width: 42px;
-      padding: 0;
-      cursor: pointer;
-      font-size: 17px;
-    }
-
-    .submit {
-      width: 100%;
-      margin-top: 17px;
-      padding: 14px;
-      border: 0;
-      border-radius: 11px;
-      color: white;
-      background: linear-gradient(105deg, #397768, #bc8055 58%, #df7e6f);
-      box-shadow: 0 12px 30px #4b897244, inset 0 1px #ffffff45;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      transition: transform .2s, filter .2s;
-    }
-    .submit:hover { transform: translateY(-2px); filter: brightness(1.1); }
-    .privacy {
-      margin: 12px 0 0;
-      color: #91a097;
-      font-size: 9px;
-      line-height: 1.5;
-      text-align: center;
-    }
-    .notice {
-      display: none;
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 9px;
-      font-size: 11px;
-    }
-    .notice.show { display: block; }
-    .notice.ok { color: #8bf1ce; background: #2dd4a01a; }
-    .notice.err { color: #ffb2bd; background: #fb71851a; }
-
-    .planner[hidden], #login-screen[hidden] { display: none; }
-    .planner-intro {
-      margin: 0 0 18px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.6;
-    }
-    .planner-grid select option { background: #142322; }
-    .itinerary { margin-top: 22px; }
-    .day-plan {
-      margin-top: 12px;
-      padding: 16px;
-      border: 1px solid #ffffff1c;
-      border-radius: 14px;
-      background: #ffffff08;
-    }
-    .day-plan h3 { margin: 0 0 9px; color: var(--gold); font-size: 14px; }
-    .day-plan ul { margin: 0; padding-left: 18px; color: #e0e3d8; font-size: 12px; line-height: 1.8; }
-    .guide-grid, .transport-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 9px;
-      margin-top: 12px;
-    }
-    .guide-card, .transport-card {
-      padding: 12px;
-      border: 1px solid #ffffff1c;
-      border-radius: 12px;
-      background: #07141399;
-    }
-    .guide-card h4, .transport-card h4 { margin: 0 0 6px; font-size: 12px; }
-    .guide-card p, .transport-card p {
-      margin: 0 0 8px;
-      color: var(--muted);
-      font-size: 10px;
-      line-height: 1.55;
-    }
-    .guide-links { display: flex; flex-wrap: wrap; gap: 10px; }
-    .guide-links a, .transport-card a {
-      color: var(--teal);
-      font-size: 10px;
-      text-decoration: none;
-    }
-    .guide-links a:hover, .transport-card a:hover { text-decoration: underline; }
-    .transport-icon {
-      display: inline-grid;
-      width: 28px;
-      height: 28px;
-      margin-bottom: 8px;
-      place-items: center;
-      border-radius: 8px;
-      color: var(--teal);
-      background: #7ce9f21a;
-    }
-    .plan-note { color: #a5b0a8; font-size: 10px; line-height: 1.6; }
-
-    .content-section {
-      width: min(1120px, calc(100% - 48px));
-      margin: auto;
-      padding: 66px 0;
-    }
-    .section-title {
-      margin: 12px 0;
-      color: var(--ink);
-      font-size: clamp(30px, 4vw, 46px);
-      letter-spacing: -.05em;
-    }
-    .section-copy {
-      max-width: 560px;
-      color: #bdc8c0;
-      font-size: 13px;
-      line-height: 1.7;
-    }
-    .destination-grid, .steps-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 17px;
-      margin-top: 26px;
-    }
-    .destination-card {
-      position: relative;
-      isolation: isolate;
-      min-height: 230px;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      overflow: hidden;
-      padding: 21px;
-      border: 1px solid #e1d1a12d;
-      border-radius: 19px;
-      background:
-        linear-gradient(0deg, #081616 2%, #081616dd 40%, transparent 85%),
-        radial-gradient(ellipse at 75% 18%, #f5cc7d4a, transparent 28%),
-        linear-gradient(145deg, #27665c, #1e3936 52%, #162827);
-      box-shadow: 0 14px 40px #0003;
-      transition: transform .25s, border-color .25s;
-    }
-    .destination-card:nth-child(2) {
-      background:
-        linear-gradient(0deg, #111616 2%, #111616dd 40%, transparent 85%),
-        radial-gradient(ellipse at 70% 22%, #ffb27c55, transparent 25%),
-        linear-gradient(145deg, #75443b, #393238 55%, #171d20);
-    }
-    .destination-card:nth-child(3) {
-      background:
-        linear-gradient(0deg, #111a19 2%, #111a19dd 40%, transparent 85%),
-        radial-gradient(ellipse at 75% 18%, #f3d78e44, transparent 25%),
-        linear-gradient(145deg, #526a4e, #304a3d 55%, #142525);
-    }
-    .destination-card::before {
-      content: "";
-      position: absolute;
-      z-index: -1;
-      inset: 0 0 34%;
-      opacity: .55;
-      background: repeating-linear-gradient(90deg, #142523 0 9%, transparent 9% 15%, #1b302d 15% 23%, transparent 23% 30%);
-      clip-path: polygon(0 42%, 8% 42%, 8% 28%, 11% 28%, 11% 51%, 17% 51%, 17% 15%, 23% 15%, 23% 62%, 29% 62%, 29% 38%, 35% 38%, 35% 53%, 42% 53%, 42% 22%, 48% 22%, 48% 62%, 55% 62%, 55% 34%, 63% 34%, 63% 53%, 70% 53%, 70% 10%, 76% 10%, 76% 65%, 100% 65%, 100% 100%, 0 100%);
-    }
-    .destination-card:nth-child(2)::before {
-      background: #342626;
-      clip-path: polygon(0 68%, 16% 68%, 23% 24%, 30% 68%, 40% 68%, 48% 0, 56% 68%, 66% 68%, 74% 28%, 82% 68%, 100% 68%, 100% 100%, 0 100%);
-    }
-    .destination-card:nth-child(3)::before {
-      background: #223629;
-      clip-path: polygon(0 48%, 12% 48%, 12% 12%, 18% 12%, 18% 48%, 30% 48%, 30% 26%, 36% 26%, 36% 48%, 49% 48%, 49% 4%, 56% 4%, 56% 48%, 68% 48%, 68% 22%, 75% 22%, 75% 48%, 100% 48%, 100% 100%, 0 100%);
-    }
-    .destination-card:hover {
-      transform: translateY(-6px) rotate(-.4deg);
-      border-color: #e4cb8a88;
-    }
-    .destination-card h3 { margin: 0 0 5px; font-size: 23px; }
-    .destination-card p { margin: 0; color: #e0dfd1; font-size: 12px; line-height: 1.5; }
-    .destination-card a { margin-top: 12px; color: #f1d48e; font-size: 12px; text-decoration: none; }
-
-    .step-card {
-      padding: 20px;
-      border: 1px solid #ddd1ab21;
-      border-radius: 17px;
-      background: linear-gradient(145deg, #ffffff0b, #e6ce8b08);
-    }
-    .step-number { color: var(--gold); font-size: 11px; font-weight: 800; letter-spacing: .1em; }
-    .step-card h3 { margin: 10px 0 7px; font-size: 16px; }
-    .step-card p { margin: 0; color: #b8c3bb; font-size: 12px; line-height: 1.6; }
-
-    .bottom-cta {
-      width: min(1120px, calc(100% - 48px));
-      margin: 12px auto 50px;
-      padding: 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      border: 1px solid #e1cc8b38;
-      border-radius: 22px;
-      background: linear-gradient(110deg, #2f6a5c77, #3a38309c);
-    }
-    .bottom-cta h2 { margin: 0 0 7px; font-size: 23px; }
-    .bottom-cta p { margin: 0; color: #c3ccc2; font-size: 13px; }
-    .bottom-cta a {
-      padding: 12px 17px;
-      border-radius: 999px;
-      color: white;
-      background: linear-gradient(100deg, #397768, #c47e59);
-      font-size: 12px;
-      font-weight: 800;
-      text-decoration: none;
-      white-space: nowrap;
-    }
-
-    footer {
-      width: min(1180px, calc(100% - 48px));
-      margin: auto;
-      padding: 0 0 20px;
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      color: #9aaca0;
-      font-size: 10px;
-    }
-
-    #cursor-trail {
-      position: fixed;
-      inset: 0;
-      z-index: 19;
-      pointer-events: none;
-    }
-    .cursor-aura, .cursor-ring, .cursor-spark {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      opacity: 0;
-    }
-    .cursor-aura {
-      z-index: 20;
-      width: 250px;
-      height: 250px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(102,204,173,.17), rgba(233,185,108,.09) 33%, rgba(240,126,103,.035) 55%, transparent 72%);
-      mix-blend-mode: screen;
-      transform: translate(-50%, -50%);
-      transition: opacity .2s;
-    }
-    .cursor-ring {
-      z-index: 21;
-      width: 22px;
-      height: 22px;
-      border: 1px solid #f2d690;
-      border-radius: 5px;
-      box-shadow: 0 0 14px #e9c77b4d, inset 0 0 9px #a5d5b333;
-      transform: translate(-50%, -50%) rotate(45deg);
-      transition: width .18s, height .18s, border-color .18s, background .18s;
-    }
-    .cursor-ring::after {
-      content: "✦";
-      color: #ffe8a8;
-      font-size: 9px;
-    }
-    .cursor-spark {
-      z-index: 22;
-      color: var(--coral);
-      font-size: 19px;
-      filter: drop-shadow(0 0 8px var(--coral));
-      transform: translate(-50%, -50%);
-    }
-    .cursor-spark::before { content: "✧"; }
-    .cursor-active .cursor-aura, .cursor-active .cursor-ring { opacity: 1; }
-    .cursor-active .cursor-spark { opacity: 1; animation: spin 5s linear infinite; }
-    .cursor-hover .cursor-ring {
-      width: 34px;
-      height: 34px;
-      border-color: var(--coral);
-      background: #ff987e14;
-    }
-    @keyframes spin { to { rotate: 360deg; } }
-
-    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-      outline: 2px solid var(--gold);
-      outline-offset: 3px;
-    }
-
-    @media (hover: hover) and (pointer: fine) {
-      body, a, button, input, select, textarea { cursor: none; }
-    }
-
-    @media (max-width: 850px) {
-      main { grid-template-columns: 1fr; gap: 42px; padding-top: 48px; }
-      .card { max-width: 620px; justify-self: start; }
-      .quote { margin-top: 25px; }
-      .content-section { padding: 50px 0; }
-    }
-
-    @media (max-width: 560px) {
-      header { height: 66px; padding: 0 19px; }
-      nav { gap: 10px; }
-      nav a:not(.nav-cta) { display: none; }
-      main, .content-section { width: calc(100% - 38px); }
-      main { padding: 38px 0 50px; }
-      h1 { font-size: clamp(48px, 14vw, 62px); }
-      .card { padding: 23px 18px; }
-      .fields, .planner-grid, .destination-grid, .steps-grid, .guide-grid, .transport-grid { grid-template-columns: 1fr; }
-      .field.full { grid-column: auto; }
-      .route-vignette { padding: 12px; }
-      .route-map { height: 55px; }
-      .route-coordinates { font-size: 7px; }
-      .destination-card { min-height: 205px; }
-      .bottom-cta { width: calc(100% - 38px); align-items: flex-start; flex-direction: column; padding: 24px; }
-      footer { width: calc(100% - 38px); flex-wrap: wrap; }
-    }
-
-    @media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
-      .cursor-aura, .cursor-ring, .cursor-spark, #cursor-trail { display: none; }
-      body, a, button, input, select, textarea { cursor: auto; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html { scroll-behavior: auto; }
-      *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a171a">
+<title>PLAN A TRIP — Find your next adventure</title>
+<style>
+:root{color-scheme:dark;--ink:#f8f5e9;--muted:#b9c0b8;--gold:#e6c981;--coral:#ff9a77;--teal:#8fe1cf}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;overflow-x:hidden;background:#0a171a;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.backdrop{position:fixed;inset:0;z-index:-2;background:radial-gradient(ellipse at 75% 30%,#1c5e5345,transparent 40%),radial-gradient(ellipse at 20% 78%,#b0593a30,transparent 35%),linear-gradient(135deg,#081417,#102124 54%,#0a1518)}
+.backdrop:before{content:"";position:absolute;inset:0;opacity:.65;background:linear-gradient(90deg,#081417eb,#08141760),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 700'%3E%3Cg fill='none' stroke='%23d0bd87' stroke-opacity='.22'%3E%3Cpath d='M-40 530C160 350 176 666 375 476S620 286 940 420M-20 580C168 420 214 700 410 522S660 344 930 468M80 0C220 140 20 250 180 390S330 530 290 730M670-30C520 90 740 180 590 310S490 530 640 730'/%3E%3Ccircle cx='680' cy='180' r='145'/%3E%3Ccircle cx='680' cy='180' r='158'/%3E%3C/g%3E%3C/svg%3E") center/cover no-repeat}
+.backdrop:after{content:"";position:absolute;inset:0;opacity:.08;background-image:radial-gradient(#fff .7px,transparent .7px);background-size:44px 44px;mask-image:linear-gradient(90deg,transparent,black)}
+header{position:sticky;top:0;z-index:5;height:74px;padding:0 max(24px,calc((100vw - 1180px)/2));display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #d1c69d22;background:#081417c7;backdrop-filter:blur(18px)}
+.brand{display:flex;align-items:center;gap:11px;color:var(--ink);font-size:13px;font-weight:850;letter-spacing:.13em;text-decoration:none}
+.brand-mark{width:36px;height:36px;display:grid;place-items:center;border-radius:13px;color:#10201e;background:linear-gradient(135deg,var(--gold),var(--coral));box-shadow:0 0 30px #e9b66c55}
+nav{display:flex;align-items:center;gap:26px}
+nav a{color:#d6ddcf;font-size:12px;text-decoration:none}
+nav a:hover{color:white}
+.nav-cta{padding:10px 16px;border:1px solid #d5c08c55;border-radius:999px;background:#d5c08c0c}
+main{width:min(1180px,calc(100% - 48px));min-height:calc(100vh - 74px);margin:auto;padding:68px 0;display:grid;grid-template-columns:1fr .9fr;align-items:center;gap:clamp(36px,7vw,88px)}
+.eyebrow,.section-kicker{color:var(--gold);font-size:10px;font-weight:800;letter-spacing:.22em;text-transform:uppercase}
+.eyebrow:before{content:"";display:inline-block;width:30px;height:1px;margin:0 10px 3px 0;background:var(--coral)}
+h1{max-width:680px;margin:22px 0 20px;font-size:clamp(54px,7vw,92px);line-height:.94;letter-spacing:-.065em}
+h1 span{color:transparent;background:linear-gradient(100deg,#edcf88,#f59a70 65%,#a9d0b1);-webkit-background-clip:text;background-clip:text}
+.intro{max-width:510px;margin:0 0 26px;color:#c7d0c9;font-size:15px;line-height:1.75}
+.highlights{display:flex;flex-wrap:wrap;gap:13px 18px}
+.highlight{display:flex;align-items:center;gap:9px;color:#e5e4d8;font-size:11px}
+.icon{width:36px;height:36px;display:grid;place-items:center;border:1px solid #d5c08c30;border-radius:12px;color:var(--gold);background:#d5c08c0c;font-size:17px}
+.route-vignette{position:relative;max-width:510px;margin-top:30px;padding:14px 17px 12px;overflow:hidden;border:1px solid #e2ca8a33;border-radius:15px;background:linear-gradient(115deg,#e1c6810e,#5eaa8b0b);box-shadow:inset 0 1px #ffffff0b;transform:rotate(-.6deg);transition:.3s}
+.route-vignette:hover{transform:rotate(0) translateY(-2px);border-color:#e6c98177}
+.route-caption,.route-labels{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#b8c5ba;font-size:8px;letter-spacing:.15em}
+.route-coordinates{color:#dbcc9e}
+.route-map{display:block;width:100%;height:64px}
+.route-line{fill:none;stroke:#a5c6a0;stroke-width:1.5;stroke-dasharray:3 7;stroke-linecap:round;animation:route-draw 2.8s ease-in-out infinite alternate}
+.route-stop{fill:var(--coral);stroke:#ffd99a;stroke-width:2;animation:beacon 2s ease-in-out infinite alternate}
+.route-stop-end{fill:#a7d6b2;animation-delay:.6s}
+.route-plane{fill:#f6dc9e;transform-box:fill-box;transform-origin:center;animation:plane-wiggle 3s ease-in-out infinite}
+@keyframes route-draw{from{stroke-dashoffset:34}to{stroke-dashoffset:0}}
+@keyframes beacon{to{filter:drop-shadow(0 0 8px #ffd58a);transform:scale(1.25)}}
+@keyframes plane-wiggle{50%{transform:translate(7px,-5px) rotate(3deg)}}
+.route-labels strong{color:#e9d49a;font-size:9px}
+.route-labels i{color:#f3a085;font:italic 12px Georgia,serif;letter-spacing:0}
+.compass-seal{position:absolute;right:17px;top:37px;z-index:2;width:47px;height:47px;display:grid;place-items:center;border:1px solid #e6c98166;border-radius:50%;color:#f0d595;background:#11211dcc;box-shadow:0 0 0 4px #e6c9810d,0 0 22px #e6c98119;transform:rotate(12deg)}
+.compass-seal:before,.compass-seal:after{content:"";position:absolute;background:#e6c98155}
+.compass-seal:before{width:1px;height:37px}.compass-seal:after{width:37px;height:1px}
+.compass-seal b{position:absolute;top:3px;font-size:7px}
+.compass-seal i{z-index:1;color:var(--coral);font-size:15px;font-style:normal}
+.quote{margin-top:28px;padding-left:15px;border-left:2px solid var(--coral);color:#b7c3bb;font-size:12px;font-style:italic;line-height:1.6}
+.quote strong{display:block;margin-top:5px;color:#e8d9ae;font-size:9px;font-style:normal;letter-spacing:.1em}
+.card{width:100%;max-width:500px;justify-self:end;padding:30px;border:1px solid #d8c38b33;border-radius:25px;background:linear-gradient(145deg,#142624f5,#0c181bf5);box-shadow:0 28px 90px #0008,0 0 70px #5da18b18,inset 0 1px #fff2;backdrop-filter:blur(20px)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px}
+.card h2{margin:0 0 7px;font-size:23px;letter-spacing:-.04em}
+.card-head p{margin:0;color:var(--muted);font-size:11px;line-height:1.5}
+.step{padding:8px 11px;border:1px solid #e5c98133;border-radius:99px;color:#edd79f;font-size:9px;letter-spacing:.08em;white-space:nowrap}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:20px;padding:4px;border-radius:12px;background:#071314}
+.tabs button{padding:10px;border:0;border-radius:9px;color:#aab4aa;background:transparent;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
+.tabs button.active{color:white;background:linear-gradient(120deg,#3c75634d,#c87d552b)}
+.fields,.planner-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.field{display:flex;flex-direction:column;gap:7px}
+.field.full{grid-column:1/-1}
+label{color:#d6d9cb;font-size:10px;font-weight:650}
+input,textarea,select{width:100%;padding:13px 14px;border:1px solid #d5e0d31d;border-radius:11px;outline:none;color:white;background:#050f11bf;font:inherit;font-size:12px;transition:border-color .2s,box-shadow .2s}
+input::placeholder,textarea::placeholder{color:#819088}
+input:focus,textarea:focus,select:focus{border-color:var(--gold);box-shadow:0 0 0 4px #e5c98122}
+textarea{min-height:66px;resize:vertical}
+.captcha-row{display:flex;gap:8px}
+.captcha-code{min-width:92px;display:grid;place-items:center;border:1px dashed #e5c98166;border-radius:10px;color:#f1dcaa;background:repeating-linear-gradient(135deg,#e1c68112 0 7px,#ff9a770a 7px 14px);font:italic bold 17px Georgia,serif;letter-spacing:.18em;text-decoration:line-through;user-select:none}
+.captcha-row input{min-width:0}
+.refresh{width:42px;padding:0;cursor:pointer;font-size:17px}
+.submit{width:100%;margin-top:17px;padding:14px;border:0;border-radius:11px;color:white;background:linear-gradient(105deg,#397768,#bc8055 58%,#df7e6f);box-shadow:0 12px 30px #4b897244,inset 0 1px #ffffff45;font-size:13px;font-weight:800;cursor:pointer;transition:transform .2s,filter .2s}
+.submit:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.privacy{margin:12px 0 0;color:#91a097;font-size:9px;line-height:1.5;text-align:center}
+.notice{display:none;margin-top:12px;padding:10px 12px;border-radius:9px;font-size:11px}
+.notice.show{display:block}.notice.ok{color:#8bf1ce;background:#2dd4a01a}.notice.err{color:#ffb2bd;background:#fb71851a}
+.planner[hidden],#login-screen[hidden]{display:none}
+.planner-intro{margin:0 0 18px;color:var(--muted);font-size:12px;line-height:1.6}
+.planner-grid select option{background:#142322}
+.itinerary{margin-top:22px}
+.day-plan{margin-top:12px;padding:16px;border:1px solid #ffffff1c;border-radius:14px;background:#ffffff08}
+.day-plan h3{margin:0 0 9px;color:var(--gold);font-size:14px}
+.day-plan ul{margin:0;padding-left:18px;color:#e0e3d8;font-size:12px;line-height:1.8}
+.guide-grid,.transport-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:12px}
+.guide-card,.transport-card{padding:12px;border:1px solid #ffffff1c;border-radius:12px;background:#07141399}
+.guide-card h4,.transport-card h4{margin:0 0 6px;font-size:12px}
+.guide-card p,.transport-card p{margin:0 0 8px;color:var(--muted);font-size:10px;line-height:1.55}
+.guide-links{display:flex;flex-wrap:wrap;gap:10px}
+.guide-links a,.transport-card a{color:var(--teal);font-size:10px;text-decoration:none}
+.guide-links a:hover,.transport-card a:hover{text-decoration:underline}
+.transport-icon{width:28px;height:28px;margin-bottom:8px;display:inline-grid;place-items:center;border-radius:8px;color:var(--teal);background:#7ce9f21a}
+.plan-note{color:#a5b0a8;font-size:10px;line-height:1.6}
+.content-section{width:min(1120px,calc(100% - 48px));margin:auto;padding:66px 0}
+.section-title{margin:12px 0;color:var(--ink);font-size:clamp(30px,4vw,46px);letter-spacing:-.05em}
+.section-copy{max-width:560px;color:#bdc8c0;font-size:13px;line-height:1.7}
+.destination-grid,.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:17px;margin-top:26px}
+.destination-card{position:relative;isolation:isolate;min-height:230px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;padding:21px;border:1px solid #e1d1a12d;border-radius:19px;background:linear-gradient(0deg,#081616 2%,#081616dd 40%,transparent 85%),radial-gradient(ellipse at 75% 18%,#f5cc7d4a,transparent 28%),linear-gradient(145deg,#27665c,#1e3936 52%,#162827);box-shadow:0 14px 40px #0003;transform:perspective(850px) rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg));transition:transform .25s,border-color .25s,box-shadow .25s}
+.destination-card:nth-child(2){background:linear-gradient(0deg,#111616 2%,#111616dd 40%,transparent 85%),radial-gradient(ellipse at 70% 22%,#ffb27c55,transparent 25%),linear-gradient(145deg,#75443b,#393238 55%,#171d20)}
+.destination-card:nth-child(3){background:linear-gradient(0deg,#111a19 2%,#111a19dd 40%,transparent 85%),radial-gradient(ellipse at 75% 18%,#f3d78e44,transparent 25%),linear-gradient(145deg,#526a4e,#304a3d 55%,#142525)}
+.destination-card:before{content:"";position:absolute;z-index:-1;inset:0 0 34%;opacity:.55;background:repeating-linear-gradient(90deg,#142523 0 9%,transparent 9% 15%,#1b302d 15% 23%,transparent 23% 30%);clip-path:polygon(0 42%,8% 42%,8% 28%,11% 28%,11% 51%,17% 51%,17% 15%,23% 15%,23% 62%,29% 62%,29% 38%,35% 38%,35% 53%,42% 53%,42% 22%,48% 22%,48% 62%,55% 62%,55% 34%,63% 34%,63% 53%,70% 53%,70% 10%,76% 10%,76% 65%,100% 65%,100% 100%,0 100%)}
+.destination-card:nth-child(2):before{background:#342626;clip-path:polygon(0 68%,16% 68%,23% 24%,30% 68%,40% 68%,48% 0,56% 68%,66% 68%,74% 28%,82% 68%,100% 68%,100% 100%,0 100%)}
+.destination-card:nth-child(3):before{background:#223629;clip-path:polygon(0 48%,12% 48%,12% 12%,18% 12%,18% 48%,30% 48%,30% 26%,36% 26%,36% 48%,49% 48%,49% 4%,56% 4%,56% 48%,68% 48%,68% 22%,75% 22%,75% 48%,100% 48%,100% 100%,0 100%)}
+.destination-card:after{content:"";position:absolute;z-index:-1;top:18px;right:18px;width:76px;height:76px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#ffe4a7b3,#f0ad7180 42%,transparent 72%);transition:transform .35s}
+.destination-card:nth-child(2):after{background:radial-gradient(circle at 38% 35%,#ffd8a6aa,#ff9a7780 42%,transparent 72%)}
+.destination-card:nth-child(3):after{background:radial-gradient(circle at 38% 35%,#fff0bcaa,#c4d59a80 42%,transparent 72%)}
+.destination-card:hover{transform:perspective(850px) rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg)) translateY(-5px);border-color:#e4cb8a88;box-shadow:0 22px 48px #0006}
+.destination-card h3{position:relative;margin:0 0 5px;font-size:23px}
+.destination-card h3:before{display:block;margin-bottom:10px;color:#efd38e;font-size:8px;font-weight:800;letter-spacing:.19em}
+.destination-card:nth-child(1) h3:before{content:"01 / CITY GLOW"}
+.destination-card:nth-child(2) h3:before{content:"02 / LEFT BANK"}
+.destination-card:nth-child(3) h3:before{content:"03 / OLD SOUL"}
+.destination-card p{position:relative;margin:0;color:#e0dfd1;font-size:12px;line-height:1.5}
+.destination-card a{position:relative;width:max-content;margin-top:12px;padding-bottom:3px;border-bottom:1px solid #f1d48e55;color:#f1d48e;font-size:12px;text-decoration:none}
+.destination-card:nth-child(2){transform:translateY(12px)}
+.destination-card:nth-child(2):hover{transform:perspective(850px) rotateX(var(--tilt-y,0deg)) rotateY(var(--tilt-x,0deg)) translateY(4px)}
+.step-card{position:relative;overflow:hidden;padding:20px;border:1px solid #ddd1ab21;border-radius:17px;background:linear-gradient(145deg,#ffffff0b,#e6ce8b08)}
+.step-card:after{content:"";position:absolute;top:-28px;right:-28px;width:90px;height:90px;border:1px solid #e6c98122;border-radius:50%;box-shadow:0 0 0 9px #e6c98108,0 0 0 20px #e6c98105}
+.step-number{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.1em}
+.step-card h3{margin:10px 0 7px;font-size:16px}
+.step-card p{margin:0;color:#b8c3bb;font-size:12px;line-height:1.6}
+.bottom-cta{width:min(1120px,calc(100% - 48px));margin:12px auto 50px;padding:30px;display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid #e1cc8b38;border-radius:22px;background:linear-gradient(110deg,#2f6a5c77,#3a38309c)}
+.bottom-cta h2{margin:0 0 7px;font-size:23px}
+.bottom-cta p{margin:0;color:#c3ccc2;font-size:13px}
+.bottom-cta a{padding:12px 17px;border-radius:999px;color:white;background:linear-gradient(100deg,#397768,#c47e59);font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap}
+footer{width:min(1180px,calc(100% - 48px));margin:auto;padding:0 0 20px;display:flex;justify-content:space-between;gap:12px;color:#9aaca0;font-size:10px}
+#cursor-trail{position:fixed;inset:0;z-index:19;pointer-events:none}
+.cursor-aura,.cursor-ring,.cursor-spark{position:fixed;top:0;left:0;pointer-events:none;opacity:0}
+.cursor-aura{z-index:20;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle,rgba(102,204,173,.17),rgba(233,185,108,.09) 33%,rgba(240,126,103,.035) 55%,transparent 72%);mix-blend-mode:screen;transform:translate(-50%,-50%);transition:opacity .2s}
+.cursor-ring{z-index:21;width:22px;height:22px;border:1px solid #f2d690;border-radius:5px;box-shadow:0 0 14px #e9c77b4d,inset 0 0 9px #a5d5b333;transform:translate(-50%,-50%) rotate(45deg);transition:width .18s,height .18s,border-color .18s,background .18s}
+.cursor-ring:after{content:"✦";color:#ffe8a8;font-size:9px}
+.cursor-spark{z-index:22;color:var(--coral);font-size:19px;filter:drop-shadow(0 0 8px var(--coral));transform:translate(-50%,-50%)}
+.cursor-spark:before{content:"✧"}
+.cursor-active .cursor-aura,.cursor-active .cursor-ring{opacity:1}
+.cursor-active .cursor-spark{opacity:1;animation:spin 5s linear infinite}
+.cursor-hover .cursor-ring{width:34px;height:34px;border-color:var(--coral);background:#ff987e14}
+@keyframes spin{to{rotate:360deg}}
+.click-ripple{position:fixed;z-index:23;width:12px;height:12px;border:1px solid #ffe4a5;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);animation:ripple-out .65s ease-out forwards}
+@keyframes ripple-out{to{width:88px;height:88px;opacity:0;border-color:var(--coral)}}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@media(hover:hover) and (pointer:fine){body,a,button,input,select,textarea{cursor:none}}
+@media(max-width:850px){main{grid-template-columns:1fr;gap:42px;padding-top:48px}.card{max-width:620px;justify-self:start}.quote{margin-top:25px}.content-section{padding:50px 0}}
+@media(max-width:560px){header{height:66px;padding:0 19px}nav{gap:10px}nav a:not(.nav-cta){display:none}main,.content-section{width:calc(100% - 38px)}main{padding:38px 0 50px}h1{font-size:clamp(48px,14vw,62px)}.card{padding:23px 18px}.fields,.planner-grid,.destination-grid,.steps-grid,.guide-grid,.transport-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.route-vignette{padding:12px}.route-map{height:55px}.route-coordinates{font-size:7px}.destination-card{min-height:205px}.destination-card:nth-child(2){transform:none}.bottom-cta{width:calc(100% - 38px);align-items:flex-start;flex-direction:column;padding:24px}footer{width:calc(100% - 38px);flex-wrap:wrap}}
+@media(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.cursor-aura,.cursor-ring,.cursor-spark,#cursor-trail{display:none}body,a,button,input,select,textarea{cursor:auto}.route-stop,.route-plane{animation:none}.destination-card,.destination-card:nth-child(2){transform:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
 </head>
-
 <body>
-  <div class="backdrop" aria-hidden="true"></div>
+<div class="backdrop" aria-hidden="true"></div>
 
-  <header>
-    <a class="brand" href="#top"><span class="brand-mark">✦</span> PLAN A TRIP</a>
-    <nav aria-label="Main navigation">
-      <a href="#destinations">Destinations</a>
-      <a href="#how-it-works">How it works</a>
-      <a class="nav-cta" href="#signup">Get started ↗</a>
-    </nav>
-  </header>
+<header>
+  <a class="brand" href="#top"><span class="brand-mark">✦</span> PLAN A TRIP</a>
+  <nav aria-label="Main navigation">
+    <a href="#destinations">Destinations</a>
+    <a href="#how-it-works">How it works</a>
+    <a class="nav-cta" href="#signup">Get started ↗</a>
+  </nav>
+</header>
 
-  <main id="top">
-    <section class="copy">
-      <div class="eyebrow">Your next chapter starts here</div>
-      <h1>Go beyond<br>the <span>ordinary.</span></h1>
-      <p class="intro">
-        Big-city nights, quiet mountain mornings, and all the unexpected moments
-        in between. Start planning a trip that feels like yours.
-      </p>
+<main id="top">
+  <section class="copy">
+    <div class="eyebrow">Your next chapter starts here</div>
+    <h1>Go beyond<br>the <span>ordinary.</span></h1>
+    <p class="intro">Big-city nights, quiet mountain mornings, and all the unexpected moments in between. Start planning a trip that feels like yours.</p>
+    <div class="highlights">
+      <div class="highlight"><span class="icon">⌖</span> Trips made for you</div>
+      <div class="highlight"><span class="icon">✧</span> Handpicked experiences</div>
+      <div class="highlight"><span class="icon">♡</span> Your pace, your way</div>
+    </div>
 
-      <div class="highlights">
-        <div class="highlight"><span class="icon">⌖</span> Trips made for you</div>
-        <div class="highlight"><span class="icon">✧</span> Handpicked experiences</div>
-        <div class="highlight"><span class="icon">♡</span> Your pace, your way</div>
-      </div>
+    <div class="route-vignette">
+      <div class="route-caption"><span>THE WORLD IS OPEN</span><span class="route-coordinates">35° 40′ N · 139° 41′ E</span></div>
+      <svg class="route-map" viewBox="0 0 520 112" aria-hidden="true">
+        <path class="route-line" d="M24 75 C92 13 153 107 222 61 S352 16 410 59 S475 94 498 35"/>
+        <circle class="route-stop" cx="24" cy="75" r="5"/>
+        <circle class="route-stop route-stop-end" cx="498" cy="35" r="6"/>
+        <path class="route-plane" d="M244 45l15 6 12-9 4 2-8 11 8 4-1 3-11-3-6 8-3-1 2-10-12-7z"/>
+      </svg>
+      <div class="route-labels"><span>START ANYWHERE</span><strong>NEXT STOP: <i>somewhere new</i></strong></div>
+      <span class="compass-seal" aria-hidden="true"><b>N</b><i>✦</i></span>
+    </div>
 
-      <div class="route-vignette">
-        <div class="route-caption">
-          <span>THE WORLD IS OPEN</span>
-          <span class="route-coordinates">35° 40′ N · 139° 41′ E</span>
-        </div>
-        <svg class="route-map" viewBox="0 0 520 112" aria-hidden="true">
-          <path class="route-line" d="M24 75 C92 13 153 107 222 61 S352 16 410 59 S475 94 498 35"/>
-          <circle class="route-stop" cx="24" cy="75" r="5"/>
-          <circle class="route-stop route-stop-end" cx="498" cy="35" r="6"/>
-          <path class="route-plane" d="M244 45l15 6 12-9 4 2-8 11 8 4-1 3-11-3-6 8-3-1 2-10-12-7z"/>
-        </svg>
-        <div class="route-labels">
-          <span>START ANYWHERE</span>
-          <strong>NEXT STOP: <i>somewhere new</i></strong>
-        </div>
-      </div>
+    <div class="quote">“The journey is yours to make.”<strong>PLAN A TRIP · FIND YOUR SOMEWHERE</strong></div>
+  </section>
 
-      <div class="quote">“The journey is yours to make.”
-        <strong>PLAN A TRIP · FIND YOUR SOMEWHERE</strong>
-      </div>
-    </section>
+  <section class="card" id="signup" aria-labelledby="form-title">
+    <div class="card-head">
+      <div><h2 id="form-title">Let’s get you going</h2><p id="form-subtitle">Set up your traveler profile in a moment.</p></div>
+      <span class="step">✦ &nbsp; FREE TO JOIN</span>
+    </div>
 
-    <section class="card" id="signup" aria-labelledby="form-title">
-      <div class="card-head">
-        <div>
-          <h2 id="form-title">Let’s get you going</h2>
-          <p id="form-subtitle">Set up your traveler profile in a moment.</p>
-        </div>
-        <span class="step">✦ &nbsp; FREE TO JOIN</span>
-      </div>
+    <div class="tabs" role="tablist" aria-label="Account options">
+      <button type="button" class="active" id="signup-tab" aria-selected="true">Create account</button>
+      <button type="button" id="login-tab" aria-selected="false">Log in</button>
+    </div>
 
-      <div class="tabs" role="tablist" aria-label="Account options">
-        <button type="button" class="active" id="signup-tab" aria-selected="true">Create account</button>
-        <button type="button" id="login-tab" aria-selected="false">Log in</button>
-      </div>
-
-      <form id="signup-form">
-        <div class="fields">
-          <div class="field">
-            <label for="name">Full name</label>
-            <input id="name" autocomplete="name" placeholder="Your name" required>
-          </div>
-          <div class="field">
-            <label for="phone">Phone number</label>
-            <input id="phone" type="tel" autocomplete="tel" placeholder="+1 555 000 0000" required>
-          </div>
-          <div class="field full">
-            <label for="email">Email address</label>
-            <input id="email" type="email" autocomplete="email" placeholder="you@example.com" required>
-          </div>
-          <div class="field full">
-            <label for="address">Address</label>
-            <textarea id="address" autocomplete="street-address" placeholder="Street, city, country" required></textarea>
-          </div>
-          <div class="field">
-            <label for="password">Password</label>
-            <input id="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" required>
-          </div>
-          <div class="field">
-            <label for="captcha">Quick check: enter the code</label>
-            <div class="captcha-row">
-              <span class="captcha-code" id="captcha-code" aria-label="CAPTCHA code"></span>
-              <button class="refresh" type="button" id="refresh-captcha" aria-label="Refresh code">↻</button>
-              <input id="captcha" placeholder="Code" autocomplete="off" required>
-            </div>
+    <form id="signup-form">
+      <div class="fields">
+        <div class="field"><label for="name">Full name</label><input id="name" autocomplete="name" placeholder="Your name" required></div>
+        <div class="field"><label for="phone">Phone number</label><input id="phone" type="tel" autocomplete="tel" placeholder="+1 555 000 0000" required></div>
+        <div class="field full"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" required></div>
+        <div class="field full"><label for="address">Address</label><textarea id="address" autocomplete="street-address" placeholder="Street, city, country" required></textarea></div>
+        <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="new-password" placeholder="At least 8 characters" minlength="8" required></div>
+        <div class="field"><label for="captcha">Quick check: enter the code</label>
+          <div class="captcha-row">
+            <span class="captcha-code" id="captcha-code" aria-label="CAPTCHA code"></span>
+            <button class="refresh" type="button" id="refresh-captcha" aria-label="Refresh code">↻</button>
+            <input id="captcha" placeholder="Code" autocomplete="off" required>
           </div>
         </div>
+      </div>
+      <button class="submit" type="submit">Create my travel profile →</button>
+      <div id="notice" class="notice" role="status" aria-live="polite"></div>
+      <p class="privacy">This demo keeps profile details on this device and does not create a real account.</p>
+    </form>
 
-        <button class="submit" id="submit-button" type="submit">Create my travel profile →</button>
-        <div id="notice" class="notice" role="status" aria-live="polite"></div>
-        <p class="privacy">This demo keeps profile details on this device and does not create a real account.</p>
+    <div id="login-screen" hidden>
+      <form id="login-form">
+        <div class="field"><label for="login-email">Email address</label><input id="login-email" type="email" autocomplete="username" required></div>
+        <div class="field" style="margin-top:13px"><label for="login-password">Password</label><input id="login-password" type="password" autocomplete="current-password" required></div>
+        <button class="submit" type="submit">Continue to trip planner →</button>
+        <p class="privacy">Demo login only. No account details are stored.</p>
       </form>
+    </div>
 
-      <div id="login-screen" hidden>
-        <form id="login-form">
-          <div class="field">
-            <label for="login-email">Email address</label>
-            <input id="login-email" type="email" autocomplete="username" required>
-          </div>
-          <div class="field" style="margin-top:13px">
-            <label for="login-password">Password</label>
-            <input id="login-password" type="password" autocomplete="current-password" required>
-          </div>
-          <button class="submit" type="submit">Continue to trip planner →</button>
-          <p class="privacy">Demo login only. No account details are stored.</p>
-        </form>
+    <div id="planner-screen" class="planner" hidden>
+      <div class="card-head">
+        <div><h2>Plan your next trip</h2><p>Choose your route, time, and travel style.</p></div>
+        <span class="step">✦ &nbsp; TRIP PLANNER</span>
       </div>
-
-      <div id="planner-screen" class="planner" hidden>
-        <div class="card-head">
-          <div>
-            <h2>Plan your next trip</h2>
-            <p>Choose your route, time, and travel style.</p>
+      <p class="planner-intro">Build a day-by-day itinerary with places to explore and time to recharge.</p>
+      <form id="planner-form">
+        <div class="planner-grid">
+          <div class="field"><label for="from-place">Starting from</label><input id="from-place" placeholder="City or airport" required></div>
+          <div class="field"><label for="to-place">Destination</label><input id="to-place" placeholder="Where do you want to go?" required></div>
+          <div class="field"><label for="trip-days">How many days?</label><input id="trip-days" type="number" min="1" max="14" value="3" required></div>
+          <div class="field"><label for="travel-style">Trip style</label>
+            <select id="travel-style">
+              <option>Balanced</option><option>Culture &amp; history</option><option>Food &amp; cafes</option><option>Nature &amp; outdoors</option><option>Relaxed pace</option>
+            </select>
           </div>
-          <span class="step">✦ &nbsp; TRIP PLANNER</span>
+          <div class="field full"><label for="vehicle">Transport preference</label>
+            <select id="vehicle">
+              <option value="all">Show all choices</option><option value="flight">Flight</option><option value="train">Train</option><option value="bus">Bus</option><option value="car">Car or rental</option>
+            </select>
+          </div>
         </div>
-        <p class="planner-intro">Build a day-by-day starting itinerary with places to explore and time to recharge.</p>
-
-        <form id="planner-form">
-          <div class="planner-grid">
-            <div class="field">
-              <label for="from-place">Starting from</label>
-              <input id="from-place" placeholder="City or airport" required>
-            </div>
-            <div class="field">
-              <label for="to-place">Destination</label>
-              <input id="to-place" placeholder="Where do you want to go?" required>
-            </div>
-            <div class="field">
-              <label for="trip-days">How many days?</label>
-              <input id="trip-days" type="number" min="1" max="14" value="3" required>
-            </div>
-            <div class="field">
-              <label for="travel-style">Trip style</label>
-              <select id="travel-style">
-                <option>Balanced</option>
-                <option>Culture &amp; history</option>
-                <option>Food &amp; cafes</option>
-                <option>Nature &amp; outdoors</option>
-                <option>Relaxed pace</option>
-              </select>
-            </div>
-            <div class="field full">
-              <label for="vehicle">Transport preference</label>
-              <select id="vehicle">
-                <option value="all">Show all choices</option>
-                <option value="flight">Flight</option>
-                <option value="train">Train</option>
-                <option value="bus">Bus</option>
-                <option value="car">Car or rental</option>
-              </select>
-            </div>
-          </div>
-          <button class="submit" type="submit">Build my itinerary ✦</button>
-        </form>
-        <div id="itinerary" class="itinerary" aria-live="polite"></div>
-        <p class="plan-note">Sample suggestions only. Confirm venue details and availability before booking.</p>
-      </div>
-    </section>
-  </main>
-
-  <section class="content-section" id="destinations">
-    <div class="section-kicker">Find your somewhere</div>
-    <h2 class="section-title">A little inspiration for the road.</h2>
-    <p class="section-copy">
-      Start with a place that sparks your curiosity, then shape the trip around your own pace.
-    </p>
-    <div class="destination-grid">
-      <article class="destination-card">
-        <h3>Tokyo, Japan</h3>
-        <p>Neon nights, quiet shrines, and a city full of contrasts.</p>
-        <a href="#signup">Plan a Tokyo trip →</a>
-      </article>
-      <article class="destination-card">
-        <h3>Paris, France</h3>
-        <p>Museums, café terraces, riverside walks, and timeless streets.</p>
-        <a href="#signup">Plan a Paris trip →</a>
-      </article>
-      <article class="destination-card">
-        <h3>Kyoto, Japan</h3>
-        <p>Temple paths, traditional lanes, gardens, and mountain air.</p>
-        <a href="#signup">Plan a Kyoto trip →</a>
-      </article>
+        <button class="submit" type="submit">Build my itinerary ✦</button>
+      </form>
+      <div id="itinerary" class="itinerary" aria-live="polite"></div>
+      <p class="plan-note">Sample suggestions only. Confirm venue details and availability before booking.</p>
     </div>
   </section>
+</main>
 
-  <section class="content-section" id="how-it-works">
-    <div class="section-kicker">Your trip, your way</div>
-    <h2 class="section-title">From idea to itinerary in three steps.</h2>
-    <div class="steps-grid">
-      <article class="step-card">
-        <span class="step-number">01 · TELL US WHERE</span>
-        <h3>Choose your route</h3>
-        <p>Enter where you’re starting, where you want to go, and how many days you have.</p>
-      </article>
-      <article class="step-card">
-        <span class="step-number">02 · SET YOUR PACE</span>
-        <h3>Pick a travel style</h3>
-        <p>Make room for culture, food, the outdoors, or an easygoing mix of everything.</p>
-      </article>
-      <article class="step-card">
-        <span class="step-number">03 · MAKE IT YOURS</span>
-        <h3>Explore your plan</h3>
-        <p>Get a day-by-day starting itinerary, then adjust it to fit your interests.</p>
-      </article>
-    </div>
-  </section>
+<section class="content-section" id="destinations">
+  <div class="section-kicker">Find your somewhere</div>
+  <h2 class="section-title">A little inspiration for the road.</h2>
+  <p class="section-copy">Start with a place that sparks your curiosity, then shape the trip around your own pace.</p>
+  <div class="destination-grid">
+    <article class="destination-card"><h3>Tokyo, Japan</h3><p>Neon nights, quiet shrines, and a city full of contrasts.</p><a href="#signup">Plan a Tokyo trip</a></article>
+    <article class="destination-card"><h3>Paris, France</h3><p>Museums, café terraces, riverside walks, and timeless streets.</p><a href="#signup">Plan a Paris trip</a></article>
+    <article class="destination-card"><h3>Kyoto, Japan</h3><p>Temple paths, traditional lanes, gardens, and mountain air.</p><a href="#signup">Plan a Kyoto trip</a></article>
+  </div>
+</section>
 
-  <section class="bottom-cta">
-    <div>
-      <h2>Your next great story is out there.</h2>
-      <p>Start planning a trip that feels like you.</p>
-    </div>
-    <a href="#signup">Start planning ↗</a>
-  </section>
+<section class="content-section" id="how-it-works">
+  <div class="section-kicker">Your trip, your way</div>
+  <h2 class="section-title">From idea to itinerary in three steps.</h2>
+  <div class="steps-grid">
+    <article class="step-card"><span class="step-number">01 · TELL US WHERE</span><h3>Choose your route</h3><p>Enter where you’re starting, where you want to go, and how many days you have.</p></article>
+    <article class="step-card"><span class="step-number">02 · SET YOUR PACE</span><h3>Pick a travel style</h3><p>Make room for culture, food, the outdoors, or an easygoing mix of everything.</p></article>
+    <article class="step-card"><span class="step-number">03 · MAKE IT YOURS</span><h3>Explore your plan</h3><p>Get a day-by-day starting itinerary, then adjust it to fit your interests.</p></article>
+  </div>
+</section>
 
-  <footer>
-    <span>© 2025 PLAN A TRIP</span>
-    <span>Make room for the unexpected ✦</span>
-  </footer>
+<section class="bottom-cta">
+  <div><h2>Your next great story is out there.</h2><p>Start planning a trip that feels like you.</p></div>
+  <a href="#signup">Start planning ↗</a>
+</section>
 
-  <script>
-    const signupForm = document.getElementById("signup-form");
-    const loginForm = document.getElementById("login-form");
-    const plannerForm = document.getElementById("planner-form");
-    const captchaBox = document.getElementById("captcha-code");
-    const notice = document.getElementById("notice");
-    const signupTab = document.getElementById("signup-tab");
-    const loginTab = document.getElementById("login-tab");
-    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    let captchaCode = "";
+<footer><span>© 2025 PLAN A TRIP</span><span>Make room for the unexpected ✦</span></footer>
 
-    function newCaptcha() {
-      captchaCode = Array.from({ length: 5 }, () =>
-        alphabet[Math.floor(Math.random() * alphabet.length)]
-      ).join("");
-      captchaBox.textContent = captchaCode;
-      document.getElementById("captcha").value = "";
-    }
+<script>
+const signupForm=document.getElementById("signup-form");
+const loginForm=document.getElementById("login-form");
+const plannerForm=document.getElementById("planner-form");
+const notice=document.getElementById("notice");
+const alphabet="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+let captchaCode="";
 
-    function setTab(mode) {
-      const isSignup = mode === "signup";
-      signupTab.classList.toggle("active", isSignup);
-      loginTab.classList.toggle("active", !isSignup);
-      signupTab.setAttribute("aria-selected", String(isSignup));
-      loginTab.setAttribute("aria-selected", String(!isSignup));
-      signupForm.hidden = !isSignup;
-      document.getElementById("login-screen").hidden = isSignup;
-      document.getElementById("form-title").textContent = isSignup ? "Let’s get you going" : "Welcome back";
-      document.getElementById("form-subtitle").textContent = isSignup
-        ? "Set up your traveler profile in a moment."
-        : "Log in to continue planning your next trip.";
-      notice.className = "notice";
-    }
+function newCaptcha(){
+  captchaCode=Array.from({length:5},()=>alphabet[Math.floor(Math.random()*alphabet.length)]).join("");
+  document.getElementById("captcha-code").textContent=captchaCode;
+  document.getElementById("captcha").value="";
+}
 
+function setTab(mode){
+  const signup=mode==="signup";
+  document.getElementById("signup-tab").classList.toggle("active",signup);
+  document.getElementById("login-tab").classList.toggle("active",!signup);
+  document.getElementById("signup-tab").setAttribute("aria-selected",String(signup));
+  document.getElementById("login-tab").setAttribute("aria-selected",String(!signup));
+  signupForm.hidden=!signup;
+  document.getElementById("login-screen").hidden=signup;
+  document.getElementById("form-title").textContent=signup?"Let’s get you going":"Welcome back";
+  document.getElementById("form-subtitle").textContent=signup?"Set up your traveler profile in a moment.":"Log in to continue planning your next trip.";
+  notice.className="notice";
+}
+
+newCaptcha();
+document.getElementById("refresh-captcha").addEventListener("click",newCaptcha);
+document.getElementById("signup-tab").addEventListener("click",()=>setTab("signup"));
+document.getElementById("login-tab").addEventListener("click",()=>setTab("login"));
+
+signupForm.addEventListener("submit",event=>{
+  event.preventDefault();
+  if(!signupForm.reportValidity())return;
+  if(document.getElementById("captcha").value.trim().toUpperCase()!==captchaCode){
+    notice.textContent="That code didn’t match. Please try the new code.";
+    notice.className="notice show err";
     newCaptcha();
-    document.getElementById("refresh-captcha").addEventListener("click", newCaptcha);
-    signupTab.addEventListener("click", () => setTab("signup"));
-    loginTab.addEventListener("click", () => setTab("login"));
+    return;
+  }
+  document.getElementById("login-email").value=document.getElementById("email").value;
+  setTab("login");
+});
 
-    signupForm.addEventListener("submit", event => {
-      event.preventDefault();
-      if (!signupForm.reportValidity()) return;
+loginForm.addEventListener("submit",event=>{
+  event.preventDefault();
+  if(!loginForm.reportValidity())return;
+  document.querySelector(".tabs").hidden=true;
+  document.querySelector(".card-head").hidden=true;
+  document.getElementById("login-screen").hidden=true;
+  document.getElementById("planner-screen").hidden=false;
+});
 
-      if (document.getElementById("captcha").value.trim().toUpperCase() !== captchaCode) {
-        notice.textContent = "That code didn’t match. Please try the new code.";
-        notice.className = "notice show err";
-        newCaptcha();
-        return;
-      }
+const placesByCity={
+  tokyo:["Asakusa and Sensō-ji Temple","Ueno Park and Tokyo National Museum","Shibuya Crossing and Meiji Shrine","Tsukiji Outer Market and Ginza","teamLab digital art and Odaiba"],
+  kyoto:["Fushimi Inari Shrine","Kiyomizu-dera and historic Higashiyama","Arashiyama Bamboo Grove","Nishiki Market","Kinkaku-ji (Golden Pavilion)"],
+  paris:["Eiffel Tower and Seine riverside","Louvre Museum and Tuileries Garden","Montmartre and Sacré-Cœur","Musée d’Orsay and Saint-Germain","Île de la Cité"],
+  london:["Westminster and the South Bank","British Museum and Covent Garden","Tower of London and Tower Bridge","Hyde Park","Camden Market"],
+  mumbai:["Gateway of India and Colaba","Chhatrapati Shivaji Maharaj museum","Marine Drive and Girgaon Chowpatty","Bandra Fort","Sanjay Gandhi National Park"],
+  bengaluru:["Cubbon Park and Vidhana Soudha","Bengaluru Palace","Lalbagh Botanical Garden","Church Street","Nandi Hills day trip"]
+};
 
-      document.getElementById("login-email").value =
-        document.getElementById("email").value;
-      setTab("login");
-    });
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]));
+}
+function searchLink(query){return "https://www.google.com/search?q="+encodeURIComponent(query)}
 
-    loginForm.addEventListener("submit", event => {
-      event.preventDefault();
-      if (!loginForm.reportValidity()) return;
-      document.querySelector(".tabs").hidden = true;
-      document.querySelector(".card-head").hidden = true;
-      document.getElementById("login-screen").hidden = true;
-      document.getElementById("planner-screen").hidden = false;
-    });
+function renderPlan(from,to,days,style){
+  const city=Object.keys(placesByCity).find(name=>to.toLowerCase().includes(name));
+  const places=placesByCity[city]||[
+    `Explore ${to}’s popular downtown sights`,
+    "Visit a local museum or cultural district",
+    "Discover a neighborhood market and local food",
+    "Spend time at a park, viewpoint, or waterfront",
+    "Choose a nearby day trip or local experience"
+  ];
+  const choice=document.getElementById("vehicle").value;
+  const vehicles=[
+    ["flight","✈","Flight","Consider for longer routes."],
+    ["train","🚆","Train","Check intercity rail availability."],
+    ["bus","🚌","Bus","Compare coach routes and travel times."],
+    ["car","🚗","Car or rental","Check driving rules and parking."]
+  ].filter(([key])=>choice==="all"||choice===key);
 
-    const attractions = {
-      tokyo: [
-        "Asakusa and Sensō-ji Temple",
-        "Ueno Park and Tokyo National Museum",
-        "Shibuya Crossing and Meiji Shrine",
-        "Tsukiji Outer Market and Ginza",
-        "teamLab digital art and Odaiba"
-      ],
-      kyoto: [
-        "Fushimi Inari Shrine",
-        "Kiyomizu-dera and historic Higashiyama",
-        "Arashiyama Bamboo Grove",
-        "Nishiki Market",
-        "Kinkaku-ji (Golden Pavilion)"
-      ],
-      paris: [
-        "Eiffel Tower and Seine riverside",
-        "Louvre Museum and Tuileries Garden",
-        "Montmartre and Sacré-Cœur",
-        "Musée d’Orsay and Saint-Germain",
-        "Île de la Cité"
-      ],
-      london: [
-        "Westminster and the South Bank",
-        "British Museum and Covent Garden",
-        "Tower of London and Tower Bridge",
-        "Hyde Park",
-        "Camden Market"
-      ],
-      mumbai: [
-        "Gateway of India and Colaba",
-        "Chhatrapati Shivaji Maharaj museum",
-        "Marine Drive and Girgaon Chowpatty",
-        "Bandra Fort",
-        "Sanjay Gandhi National Park"
-      ],
-      bengaluru: [
-        "Cubbon Park and Vidhana Soudha",
-        "Bengaluru Palace",
-        "Lalbagh Botanical Garden",
-        "Church Street",
-        "Nandi Hills day trip"
-      ]
-    };
+  let html=`<h2 style="font-size:19px;margin:0 0 5px">${days}-day trip: ${escapeHTML(from)} → ${escapeHTML(to)}</h2>
+  <p class="planner-intro">A ${escapeHTML(style.toLowerCase())} pace for your trip.</p>
+  <h3>Transport choices</h3><div class="transport-grid">
+  ${vehicles.map(([mode,icon,name,description])=>`<article class="transport-card"><span class="transport-icon">${icon}</span><h4>${name}</h4><p>${description}</p><a href="${searchLink(name+" from "+from+" to "+to)}" target="_blank" rel="noopener">Search options ↗</a></article>`).join("")}
+  </div>`;
 
-    function escapeHTML(value) {
-      return String(value).replace(/[&<>"']/g, char => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
-      }[char]));
+  for(let day=0;day<days;day++){
+    const first=places[(day*2)%places.length];
+    const second=places[(day*2+1)%places.length];
+    const evening=style==="Relaxed pace"?"Leave the evening open to recharge":"Finish with dinner and an evening stroll";
+    html+=`<article class="day-plan"><h3>Day ${day+1}</h3>
+      <ul><li>${escapeHTML(first)}</li><li>${escapeHTML(second)}</li><li>${escapeHTML(evening)}</li></ul>
+      <div class="guide-grid">${[first,second].map(place=>`<div class="guide-card">
+        <h4>${escapeHTML(place)}</h4><p>Check current visitor information and opening times.</p>
+        <div class="guide-links">
+          <a href="${searchLink(place+" "+to+" official visitor guide")}" target="_blank" rel="noopener">Visitor guide ↗</a>
+          <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place+" "+to)}" target="_blank" rel="noopener">Map ↗</a>
+        </div></div>`).join("")}</div></article>`;
+  }
+  document.getElementById("itinerary").innerHTML=html;
+}
+
+plannerForm.addEventListener("submit",event=>{
+  event.preventDefault();
+  if(!plannerForm.reportValidity())return;
+  renderPlan(
+    document.getElementById("from-place").value.trim(),
+    document.getElementById("to-place").value.trim(),
+    Number(document.getElementById("trip-days").value),
+    document.getElementById("travel-style").value
+  );
+});
+
+// Custom compass cursor, particle trail, click ripple, and destination-card tilt.
+const finePointer=matchMedia("(hover:hover) and (pointer:fine)").matches;
+const reducedMotion=matchMedia("(prefers-reduced-motion:reduce)").matches;
+
+if(finePointer&&!reducedMotion){
+  const aura=document.createElement("div");aura.className="cursor-aura";
+  const ring=document.createElement("div");ring.className="cursor-ring";
+  const spark=document.createElement("div");spark.className="cursor-spark";
+  const canvas=document.createElement("canvas");canvas.id="cursor-trail";canvas.setAttribute("aria-hidden","true");
+  document.body.append(canvas,aura,ring,spark);
+
+  const context=canvas.getContext("2d");
+  let width=0,height=0,particles=[],cursorX=-100,cursorY=-100,ringX=-100,ringY=-100,cursorFrame=0,particleFrame=0;
+
+  function resizeCanvas(){
+    const scale=Math.min(devicePixelRatio||1,2);
+    width=innerWidth;height=innerHeight;
+    canvas.width=width*scale;canvas.height=height*scale;
+    canvas.style.width=width+"px";canvas.style.height=height+"px";
+    context.setTransform(scale,0,0,scale,0,0);
+  }
+
+  function drawParticles(){
+    context.clearRect(0,0,width,height);
+    particles=particles.filter(p=>p.life>.04);
+    for(const p of particles){
+      p.x+=p.vx;p.y+=p.vy;p.life-=.025;p.size*=.994;
+      context.beginPath();
+      context.fillStyle=`rgba(${p.color},${p.life*.75})`;
+      context.shadowBlur=10;
+      context.shadowColor=`rgba(${p.color},${p.life})`;
+      context.arc(p.x,p.y,p.size,0,Math.PI*2);
+      context.fill();
     }
+    context.shadowBlur=0;
+    if(particles.length)particleFrame=requestAnimationFrame(drawParticles);
+    else particleFrame=0;
+  }
 
-    function searchLink(query) {
-      return "https://www.google.com/search?q=" + encodeURIComponent(query);
+  function addParticles(x,y,count=3){
+    for(let i=0;i<count;i++){
+      particles.push({x,y,vx:(Math.random()-.5)*.8,vy:(Math.random()-.5)*.8,life:1,size:1+Math.random()*2,color:Math.random()<.7?"48,210,174":"255,145,118"});
     }
+    if(particles.length>120)particles.splice(0,particles.length-120);
+    if(!particleFrame)particleFrame=requestAnimationFrame(drawParticles);
+  }
 
-    function renderPlan(from, to, days, style) {
-      const key = Object.keys(attractions).find(city =>
-        to.toLowerCase().includes(city)
-      );
-      const places = attractions[key] || [
-        `Explore ${to}’s popular downtown sights`,
-        "Visit a local museum or cultural district",
-        "Discover a neighborhood market and local food",
-        "Spend time at a park, viewpoint, or waterfront",
-        "Choose a nearby day trip or local experience"
-      ];
-      const selectedVehicle = document.getElementById("vehicle").value;
-      const vehicles = [
-        ["flight", "✈", "Flight", "Consider for longer routes."],
-        ["train", "🚆", "Train", "Check intercity rail availability."],
-        ["bus", "🚌", "Bus", "Compare coach routes and travel times."],
-        ["car", "🚗", "Car or rental", "Check local driving rules and parking."]
-      ].filter(([key]) => selectedVehicle === "all" || selectedVehicle === key);
+  function moveCursor(){
+    ringX+=(cursorX-ringX)*.23;ringY+=(cursorY-ringY)*.23;
+    aura.style.transform=`translate3d(${cursorX}px,${cursorY}px,0) translate(-50%,-50%)`;
+    ring.style.transform=`translate3d(${ringX}px,${ringY}px,0) translate(-50%,-50%) rotate(45deg)`;
+    spark.style.left=(cursorX+18)+"px";spark.style.top=(cursorY-17)+"px";
+    if(Math.abs(cursorX-ringX)+Math.abs(cursorY-ringY)>.2)cursorFrame=requestAnimationFrame(moveCursor);
+    else cursorFrame=0;
+  }
 
-      let html = `
-        <h2 style="font-size:19px;margin:0 0 5px">
-          ${days}-day trip: ${escapeHTML(from)} → ${escapeHTML(to)}
-        </h2>
-        <p class="planner-intro">A ${escapeHTML(style.toLowerCase())} pace for your trip.</p>
-        <h3>Transport choices</h3>
-        <div class="transport-grid">
-          ${vehicles.map(([mode, icon, name, description]) => `
-            <article class="transport-card">
-              <span class="transport-icon">${icon}</span>
-              <h4>${name}</h4>
-              <p>${description}</p>
-              <a href="${searchLink(name + " from " + from + " to " + to)}"
-                 target="_blank" rel="noopener">Search options ↗</a>
-            </article>
-          `).join("")}
-        </div>
-      `;
+  resizeCanvas();
+  addEventListener("resize",resizeCanvas,{passive:true});
 
-      for (let day = 0; day < days; day++) {
-        const first = places[(day * 2) % places.length];
-        const second = places[(day * 2 + 1) % places.length];
-        const evening = style === "Relaxed pace"
-          ? "Leave the evening open to recharge"
-          : "Finish with dinner and an evening stroll";
+  document.addEventListener("pointermove",event=>{
+    cursorX=event.clientX;cursorY=event.clientY;
+    document.body.classList.add("cursor-active");
+    addParticles(cursorX,cursorY,2);
+    if(!cursorFrame)cursorFrame=requestAnimationFrame(moveCursor);
 
-        html += `
-          <article class="day-plan">
-            <h3>Day ${day + 1}</h3>
-            <ul>
-              <li>${escapeHTML(first)}</li>
-              <li>${escapeHTML(second)}</li>
-              <li>${escapeHTML(evening)}</li>
-            </ul>
-            <div class="guide-grid">
-              ${[first, second].map(place => `
-                <div class="guide-card">
-                  <h4>${escapeHTML(place)}</h4>
-                  <p>Check current visitor information and opening times.</p>
-                  <div class="guide-links">
-                    <a href="${searchLink(place + " " + to + " official visitor guide")}"
-                       target="_blank" rel="noopener">Visitor guide ↗</a>
-                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place + " " + to)}"
-                       target="_blank" rel="noopener">Map ↗</a>
-                  </div>
-                </div>
-              `).join("")}
-            </div>
-          </article>
-        `;
-      }
-
-      document.getElementById("itinerary").innerHTML = html;
+    const card=event.target.closest(".destination-card");
+    if(card){
+      const box=card.getBoundingClientRect();
+      const x=(event.clientX-box.left)/box.width-.5;
+      const y=(event.clientY-box.top)/box.height-.5;
+      card.style.setProperty("--tilt-x",`${x*4}deg`);
+      card.style.setProperty("--tilt-y",`${-y*4}deg`);
     }
+  },{passive:true});
 
-    plannerForm.addEventListener("submit", event => {
-      event.preventDefault();
-      if (!plannerForm.reportValidity()) return;
-
-      const from = document.getElementById("from-place").value.trim();
-      const to = document.getElementById("to-place").value.trim();
-      const days = Number(document.getElementById("trip-days").value);
-      const style = document.getElementById("travel-style").value;
-
-      renderPlan(from, to, days, style);
-    });
-
-    // Glowing cursor with a small particle trail and click sparkle.
-    const finePointer = matchMedia("(hover:hover) and (pointer:fine)").matches;
-    const reducedMotion = matchMedia("(prefers-reduced-motion:reduce)").matches;
-
-    if (finePointer && !reducedMotion) {
-      const aura = document.createElement("div");
-      aura.className = "cursor-aura";
-      const ring = document.createElement("div");
-      ring.className = "cursor-ring";
-      const spark = document.createElement("div");
-      spark.className = "cursor-spark";
-      const canvas = document.createElement("canvas");
-      canvas.id = "cursor-trail";
-      canvas.setAttribute("aria-hidden", "true");
-      document.body.append(canvas, aura, ring, spark);
-
-      const context = canvas.getContext("2d");
-      let width = 0, height = 0;
-      let particles = [];
-      let lastPoint = null;
-      let animationFrame = 0;
-      let mouseX = -100, mouseY = -100;
-      let ringX = -100, ringY = -100;
-
-      function resizeCanvas() {
-        const scale = Math.min(window.devicePixelRatio || 1, 2);
-        width = window.innerWidth;
-        height = window.innerHeight;
-        canvas.width = width * scale;
-        canvas.height = height * scale;
-        canvas.style.width = width + "px";
-        canvas.style.height = height + "px";
-        context.setTransform(scale, 0, 0, scale, 0, 0);
-      }
-
-      function drawParticles() {
-        context.clearRect(0, 0, width, height);
-        particles = particles.filter(particle => particle.life > .04);
-
-        for (const particle of particles) {
-          particle.x += particle.vx;
-          particle.y += particle.vy;
-          particle.life -= .025;
-          particle.size *= .994;
-          context.beginPath();
-          context.fillStyle = `rgba(${particle.color},${particle.life * .75})`;
-          context.shadowBlur = 10;
-          context.shadowColor = `rgba(${particle.color},${particle.life})`;
-          context.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-          context.fill();
-        }
-
-        context.shadowBlur = 0;
-        if (particles.length) {
-          animationFrame = requestAnimationFrame(drawParticles);
-        } else {
-          animationFrame = 0;
-        }
-      }
-
-      function addParticles(x, y, amount = 3) {
-        for (let i = 0; i < amount; i++) {
-          particles.push({
-            x, y,
-            vx: (Math.random() - .5) * .8,
-            vy: (Math.random() - .5) * .8,
-            life: 1,
-            size: 1 + Math.random() * 2,
-            color: Math.random() < .7 ? "48,210,174" : "255,145,118"
-          });
-        }
-        if (particles.length > 120) particles.splice(0, particles.length - 120);
-        if (!animationFrame) animationFrame = requestAnimationFrame(drawParticles);
-      }
-
-      function animateCursor() {
-        ringX += (mouseX - ringX) * .23;
-        ringY += (mouseY - ringY) * .23;
-        aura.style.transform = `translate3d(${mouseX}px,${mouseY}px,0) translate(-50%,-50%)`;
-        ring.style.transform = `translate3d(${ringX}px,${ringY}px,0) translate(-50%,-50%) rotate(45deg)`;
-        spark.style.left = `${mouseX + 18}px`;
-        spark.style.top = `${mouseY - 17}px`;
-
-        if (Math.abs(mouseX - ringX) + Math.abs(mouseY - ringY) > .2) {
-          requestAnimationFrame(animateCursor);
-        }
-      }
-
-      resizeCanvas();
-      window.addEventListener("resize", resizeCanvas, { passive: true });
-
-      document.addEventListener("pointermove", event => {
-        mouseX = event.clientX;
-        mouseY = event.clientY;
-        document.body.classList.add("cursor-active");
-        addParticles(mouseX, mouseY, 2);
-        animateCursor();
-      }, { passive: true });
-
-      document.addEventListener("pointerleave", () => {
-        document.body.classList.remove("cursor-active");
-        lastPoint = null;
-      });
-
-      document.addEventListener("pointerover", event => {
-        document.body.classList.toggle(
-          "cursor-hover",
-          Boolean(event.target.closest("a,button,input,textarea,select"))
-        );
-      });
-
-      document.addEventListener("click", event => {
-        for (let i = 0; i < 14; i++) {
-          const angle = Math.PI * 2 * i / 14;
-          const speed = 1 + Math.random() * 1.2;
-          particles.push({
-            x: event.clientX,
-            y: event.clientY,
-            vx: Math.cos(angle) * speed,
-            vy: Math.sin(angle) * speed,
-            life: .9,
-            size: 1.5 + Math.random() * 2,
-            color: "255,210,135"
-          });
-        }
-        if (!animationFrame) animationFrame = requestAnimationFrame(drawParticles);
-      });
+  document.addEventListener("pointerout",event=>{
+    if(event.target.classList?.contains("destination-card")){
+      event.target.style.setProperty("--tilt-x","0deg");
+      event.target.style.setProperty("--tilt-y","0deg");
     }
-  </script>
+  });
+
+  document.addEventListener("pointerleave",()=>document.body.classList.remove("cursor-active"));
+
+  document.addEventListener("pointerover",event=>{
+    document.body.classList.toggle("cursor-hover",Boolean(event.target.closest("a,button,input,textarea,select")));
+  });
+
+  document.addEventListener("click",event=>{
+    const ripple=document.createElement("span");
+    ripple.className="click-ripple";
+    ripple.style.left=event.clientX+"px";
+    ripple.style.top=event.clientY+"px";
+    document.body.appendChild(ripple);
+    ripple.addEventListener("animationend",()=>ripple.remove(),{once:true});
+
+    for(let i=0;i<14;i++){
+      const angle=Math.PI*2*i/14,speed=1+Math.random()*1.2;
+      particles.push({x:event.clientX,y:event.clientY,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:.9,size:1.5+Math.random()*2,color:"255,210,135"});
+    }
+    if(!particleFrame)particleFrame=requestAnimationFrame(drawParticles);
+  });
+}
+</script>
 </body>
 </html>
